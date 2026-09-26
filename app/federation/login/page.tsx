@@ -1,0 +1,13 @@
+'use client';
+import {FormEvent,useEffect,useState} from 'react';
+import Link from 'next/link';
+import {languages,Lang,t,phase7} from '../../../locales';
+import {LANGUAGE_KEY,loginFederationDemo,readAuth} from '../../../lib/auth';
+import {federation} from '../../../data/federation';
+export default function FederationLogin(){
+ const [lang,setLang]=useState<Lang>('en'),[id,setId]=useState('FED-001'),[pin,setPin]=useState('demo'),[error,setError]=useState('');
+ const d=phase7[lang];
+ useEffect(()=>{const l=localStorage.getItem(LANGUAGE_KEY) as Lang|null;if(l&&languages[l])setLang(l);const a=readAuth();if(a.isAuthenticated)window.location.replace(a.role==='federation'?'/federation':a.role==='worker'?'/worker':a.role==='trainee'?'/trainee':'/customer')},[]);
+ function submit(e:FormEvent){e.preventDefault();if(!id.trim()||!pin.trim()){setError('Enter the demo Federation ID and PIN.');return}loginFederationDemo(id.trim(),federation.name,federation.region);window.location.replace('/federation')}
+ return <main className="min-h-screen bg-slate-50"><header className="border-b bg-white"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4"><Link href="/" className="text-xl font-black text-[#16834b]">SahyogSetu</Link><select value={lang} onChange={e=>{const v=e.target.value as Lang;setLang(v);localStorage.setItem(LANGUAGE_KEY,v)}} className="rounded-lg border px-2 py-2 text-sm">{Object.entries(languages).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select></div></header><section className="mx-auto flex min-h-[calc(100vh-73px)] max-w-md items-center px-5 py-10"><form onSubmit={submit} className="w-full rounded-3xl border bg-white p-6 shadow-soft sm:p-8"><span className="rounded-full bg-green-100 px-3 py-1.5 text-xs font-black text-[#16834b]">{d.role}</span><h1 className="mt-5 text-3xl font-black">{d.loginTitle}</h1><p className="mt-2 text-sm text-slate-500">{d.subtitle}</p><label className="mt-7 block text-sm font-bold">{d.federationId}<input value={id} onChange={e=>setId(e.target.value)} className="mt-2 w-full rounded-xl border p-3"/></label><label className="mt-5 block text-sm font-bold">{d.password}<input value={pin} onChange={e=>setPin(e.target.value)} className="mt-2 w-full rounded-xl border p-3"/></label>{error&&<p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700">{error}</p>}<button className="mt-6 w-full rounded-xl bg-[#16834b] px-5 py-3.5 font-black text-white">{d.login}</button><Link href="/login" className="mt-4 block text-center text-sm font-bold text-[#16834b]">← {t[lang].auth.backHome}</Link></form></section></main>
+}
