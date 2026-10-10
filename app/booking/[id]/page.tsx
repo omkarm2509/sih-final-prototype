@@ -23,7 +23,9 @@ Booking data is loaded from localStorage at runtime,
 
 so there are no booking IDs available during the build.
 */
-
+export function generateStaticParams() {
+  return [];
+}
 
 const statuses = [
   "REQUESTED",
